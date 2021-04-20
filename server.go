@@ -8,8 +8,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/chukwuemekaajah/go-queue/queue"
 )
 
+fmt.Println(queue.Node{time.Now(), "hello", strconv.Itoa(234), nil})
 type Node struct {
 	dateAdded time.Time
 	topic     string
