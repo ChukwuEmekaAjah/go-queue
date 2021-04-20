@@ -8,48 +8,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/chukwuemekaajah/go-queue/queue"
+
+	"github.com/ChukwuEmekaAjah/go-queue/queue"
 )
 
-fmt.Println(queue.Node{time.Now(), "hello", strconv.Itoa(234), nil})
-type Node struct {
-	dateAdded time.Time
-	topic     string
-	value     string
-	next      *Node
-}
-
-type Queue struct {
-	head  *Node
-	tail  *Node
-	count int
-}
-
-func (c *Queue) Enqueue(item Node) int {
-
-	if c.count == 0 {
-		c.head = &item
-		c.tail = &item
-	} else {
-		c.tail.next = &item
-
-		c.tail = &item
-	}
-
-	c.count += 1
-	return c.count
-}
-
-func (c *Queue) Dequeue() Node {
-
-	head := c.head
-
-	c.head = c.head.next
-
-	return *head
-}
-
 func main() {
+	fmt.Println(queue.Node{})
 	arguments := os.Args
 
 	portAddress := ":1996"
@@ -65,13 +29,13 @@ func main() {
 	}
 	defer l.Close()
 
-	queue := new(Queue)
+	q := new(queue.Queue)
 	counter := 1
 
 	go func() {
 		for {
-			n1 := Node{time.Now(), "hello", strconv.Itoa(counter), nil}
-			queue.Enqueue(n1)
+			n1 := strconv.Itoa(counter)
+			q.Enqueue(n1)
 			counter += 1
 		}
 
@@ -85,11 +49,11 @@ func main() {
 			return
 		}
 
-		go tcpHandler(c, queue)
+		go tcpHandler(c, q)
 	}
 }
 
-func tcpHandler(c net.Conn, queue *Queue) {
+func tcpHandler(c net.Conn, q *queue.Queue) {
 
 	for {
 		netData, err := bufio.NewReader(c).ReadString('\n')
@@ -102,10 +66,10 @@ func tcpHandler(c net.Conn, queue *Queue) {
 			return
 		}
 
-		head := queue.Dequeue()
+		head := q.Dequeue()
 
-		if head != (Node{}) {
-			c.Write([]byte(head.value))
+		if head != (queue.Node{}) {
+			c.Write([]byte(head.GetValue(head)))
 		}
 
 		fmt.Print("-> ", string(netData))

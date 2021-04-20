@@ -11,14 +11,19 @@ type Node struct {
 	next      *Node
 }
 
+func (n *Node) GetValue(node Node) string {
+	return node.value
+}
+
 type Queue struct {
 	head  *Node
 	tail  *Node
 	count int
 }
 
-func (c *Queue) Enqueue(item Node) int {
+func (c *Queue) Enqueue(value string) int {
 
+	item := Node{time.Now(), "hello", value, nil}
 	if c.count == 0 {
 		c.head = &item
 		c.tail = &item
@@ -40,18 +45,3 @@ func (c *Queue) Dequeue() Node {
 
 	return *head
 }
-
-// func main() {
-
-// 	queue := new(Queue)
-// 	n1 := Node{time.Now(), "hello", "meat", nil}
-// 	n2 := Node{time.Now(), "hello", "miss", nil}
-// 	n3 := Node{time.Now(), "hello", "world", nil}
-
-// 	queue.Enqueue(n1)
-// 	queue.Enqueue(n2)
-// 	queue.Enqueue(n3)
-// 	fmt.Println(queue.Dequeue())
-// 	fmt.Println(queue.Dequeue())
-// 	fmt.Println(queue.Dequeue())
-// }

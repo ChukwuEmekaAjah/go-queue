@@ -1,3 +1,3 @@
-module github.com/chukwuemekaajah/go-queue
+module github.com/ChukwuEmekaAjah/go-queue
 
 go 1.15
