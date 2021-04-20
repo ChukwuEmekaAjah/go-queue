@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	fmt.Println(queue.Node{})
 	arguments := os.Args
 
 	portAddress := ":1996"
