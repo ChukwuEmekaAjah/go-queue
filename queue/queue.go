@@ -11,8 +11,8 @@ type Node struct {
 	next      *Node
 }
 
-func (n *Node) GetValue(node Node) string {
-	return node.value
+func (n *Node) GetValue() string {
+	return n.value
 }
 
 type Queue struct {

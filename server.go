@@ -68,7 +68,7 @@ func tcpHandler(c net.Conn, q *queue.Queue) {
 		head := q.Dequeue()
 
 		if head != (queue.Node{}) {
-			c.Write([]byte(head.GetValue(head)))
+			c.Write([]byte(head.GetValue()))
 		}
 
 		fmt.Print("-> ", string(netData))
