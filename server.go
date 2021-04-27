@@ -12,6 +12,34 @@ import (
 	"github.com/ChukwuEmekaAjah/go-queue/queue"
 )
 
+type Server struct {
+	listener    net.Listener
+	socketType  string
+	connections []net.Conn
+}
+
+func (s *Server) Create(portAddress string, socketType string) (listener net.Listener, err error) {
+
+	listener, err = net.Listen("tcp", portAddress)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	s.listener = listener
+	s.socketType = socketType
+	return listener, nil
+}
+
+func (s *Server) Publish(data string) {
+	for _, connection := range s.connections {
+		connection.Write([]byte(data))
+	}
+}
+
+// has to have its internal queue
+
 func main() {
 	arguments := os.Args
 
