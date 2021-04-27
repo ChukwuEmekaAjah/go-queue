@@ -5,8 +5,44 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strings"
 )
+
+type Client struct {
+	connection net.Conn
+}
+
+func (c *Client) Connect(serverAddress string) (connection net.Conn, err error) {
+
+	connection, err = net.Dial("tcp", serverAddress)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	c.connection = connection
+	return connection, nil
+}
+
+func (c *Client) Pull() {
+	for {
+
+		text := "data" // keep reading data from the queue without stopping
+		fmt.Fprintf(c.connection, text+"\n")
+
+		message, _ := bufio.NewReader(c.connection).ReadString('\n')
+		fmt.Print("->: " + message)
+	}
+}
+
+func (c *Client) Subscribe(topic string) {
+	fmt.Fprintf(c.connection, topic)
+}
+
+func (c *Client) Disconnect() {
+	fmt.Println("Closing connection to remote")
+	c.connection.Close()
+}
 
 func main() {
 	arguments := os.Args
@@ -17,22 +53,13 @@ func main() {
 		defaultServerAddress = arguments[1]
 	}
 
-	c, err := net.Dial("tcp", defaultServerAddress)
+	client := Client{nil}
+	_, err := client.Connect(defaultServerAddress)
+
 	if err != nil {
-		fmt.Println(err)
-		return
+		fmt.Printf("Could not connect to remote server")
+		panic(err)
 	}
 
-	for {
-
-		text := "data" // keep reading data from the queue without stopping
-		fmt.Fprintf(c, text+"\n")
-
-		message, _ := bufio.NewReader(c).ReadString('\n')
-		fmt.Print("->: " + message)
-		if strings.TrimSpace(string(text)) == "STOP" {
-			fmt.Println("TCP client exiting...")
-			return
-		}
-	}
+	client.Disconnect()
 }
