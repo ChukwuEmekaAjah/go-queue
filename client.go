@@ -1,9 +1,9 @@
-package main
+package queue
 
 import (
+	"bufio"
 	"fmt"
 	"net"
-	"os"
 )
 
 type Client struct {
@@ -24,15 +24,16 @@ func (c *Client) Connect(serverAddress string) (connection net.Conn, err error) 
 }
 
 func (c *Client) Pull() {
-	buffer := make([]byte, 8)
+	reader := bufio.NewReader(c.connection)
 	for {
 
-		_, err := c.connection.Read(buffer)
+		data, err := reader.ReadString('\n')
 
 		if err != nil {
+			fmt.Println("Error reading from publisher")
 			panic(err)
 		}
-		fmt.Println("->: ", string(buffer))
+		fmt.Println("->: ", data[0:len(data)-1])
 	}
 }
 
@@ -43,26 +44,4 @@ func (c *Client) Subscribe(topic string) {
 func (c *Client) Disconnect() {
 	fmt.Println("Closing connection to remote")
 	c.connection.Close()
-}
-
-func main() {
-	arguments := os.Args
-
-	defaultServerAddress := "localhost:1996"
-
-	if len(os.Args) > 1 {
-		defaultServerAddress = arguments[1]
-	}
-
-	client := Client{nil}
-	_, err := client.Connect(defaultServerAddress)
-
-	if err != nil {
-		fmt.Printf("Could not connect to remote server")
-		panic(err)
-	}
-
-	client.Pull()
-
-	// client.Disconnect()
 }
