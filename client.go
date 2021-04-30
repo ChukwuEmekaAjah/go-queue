@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net"
 	"os"
@@ -25,13 +24,15 @@ func (c *Client) Connect(serverAddress string) (connection net.Conn, err error) 
 }
 
 func (c *Client) Pull() {
+	buffer := make([]byte, 8)
 	for {
 
-		text := "data" // keep reading data from the queue without stopping
-		fmt.Fprintf(c.connection, text+"\n")
+		_, err := c.connection.Read(buffer)
 
-		message, _ := bufio.NewReader(c.connection).ReadString('\n')
-		fmt.Print("->: " + message)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("->: ", string(buffer))
 	}
 }
 
@@ -61,5 +62,7 @@ func main() {
 		panic(err)
 	}
 
-	client.Disconnect()
+	client.Pull()
+
+	// client.Disconnect()
 }

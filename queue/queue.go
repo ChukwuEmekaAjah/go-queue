@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"sync"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type Queue struct {
 	head  *Node
 	tail  *Node
 	count int
+	mu    sync.Mutex
 }
 
 func (c *Queue) Enqueue(value string) int {
@@ -38,10 +40,14 @@ func (c *Queue) Enqueue(value string) int {
 }
 
 func (c *Queue) Dequeue() Node {
-
 	head := c.head
 
 	c.head = c.head.next
 
 	return *head
+}
+
+func (c *Queue) Length() int {
+
+	return c.count
 }
