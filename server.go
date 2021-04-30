@@ -44,14 +44,19 @@ func (s *Server) Create(portAddress string, socketType string) {
 
 func (s *Server) Send(data string) {
 	s.queue.Enqueue(data)
+
 	if len(s.connections) > 0 {
-		fmt.Println("Did we get here")
 		head := s.queue.Dequeue()
-		s.connections[0].Write([]byte(head.GetValue()))
+		if s.socketType == "push" {
+			s.connections[0].Write([]byte(head.GetValue()))
+		} else if s.socketType == "pub" {
+			for _, connection := range s.connections {
+				connection.Write([]byte(head.GetValue()))
+			}
+		}
 	}
 
 	if len(s.connections) > 1 {
-		fmt.Println("swap stage")
 		s.connections = append(s.connections[1:], s.connections[0])
 	}
 }
