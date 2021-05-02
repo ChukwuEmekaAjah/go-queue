@@ -3,7 +3,6 @@ package queue
 import (
 	"fmt"
 	"net"
-	"sync"
 )
 
 type Server struct {
@@ -11,8 +10,6 @@ type Server struct {
 	socketType  string
 	connections []net.Conn
 	queue       Queue
-	receiver    chan string
-	mu          sync.Mutex
 }
 
 func (s *Server) Create(portAddress string, socketType string) {
@@ -51,10 +48,9 @@ func (s *Server) Send(data string) {
 				connection.Write([]byte(head.GetValue()))
 			}
 		}
-		// s.connections[0].Write([]byte(head.GetValue()))
 	}
 
-	if len(s.connections) > 1 && s.socketType == "push" {
+	if len(s.connections) > 1 && s.socketType == "push" { // naive rotation of the connections
 		s.connections = append(s.connections[1:], s.connections[0])
 	}
 }

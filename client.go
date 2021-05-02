@@ -23,7 +23,7 @@ func (c *Client) Connect(serverAddress string) (connection net.Conn, err error) 
 	return connection, nil
 }
 
-func (c *Client) Pull() {
+func (c *Client) Pull(handler func(data string)) {
 	reader := bufio.NewReader(c.connection)
 	for {
 
@@ -33,12 +33,24 @@ func (c *Client) Pull() {
 			fmt.Println("Error reading from publisher")
 			panic(err)
 		}
+		go handler(data[0 : len(data)-1])
 		fmt.Println("->: ", data[0:len(data)-1])
 	}
 }
 
-func (c *Client) Subscribe(topic string) {
-	fmt.Fprintf(c.connection, topic)
+func (c *Client) Subscribe(topic string, handler func(data string)) {
+	reader := bufio.NewReader(c.connection)
+	for {
+
+		data, err := reader.ReadString('\n')
+
+		if err != nil {
+			fmt.Println("Error reading from publisher")
+			panic(err)
+		}
+		go handler(data[0 : len(data)-1])
+		fmt.Println("->: ", data[0:len(data)-1])
+	}
 }
 
 func (c *Client) Disconnect() {
