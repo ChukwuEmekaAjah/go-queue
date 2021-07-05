@@ -38,6 +38,7 @@ func (s *Server) Create(portAddress string, socketType string) {
 }
 
 func (s *Server) Send(data string) {
+	data += "\n"
 	s.queue.Enqueue(data)
 	fmt.Println("data sent is >> ", data)
 	if len(s.connections) > 0 {

@@ -28,11 +28,12 @@ func (c *Client) Pull(handler func(data string)) {
 	for {
 
 		readData, err := reader.ReadString('\n')
+
 		if err != nil {
 			fmt.Println("Error reading from publisher")
 			panic(err)
 		}
-		handler(readData[0 : len(readData)-1])
+		go handler(readData[0 : len(readData)-1])
 		fmt.Println("->: ", readData[0:len(readData)-1])
 	}
 }
@@ -42,7 +43,7 @@ func (c *Client) Subscribe(topic string, handler func(data string)) {
 	for {
 
 		readData, err := reader.ReadString('\n')
-		fmt.Println("read data", readData)
+
 		if err != nil {
 			fmt.Println("Error reading from publisher")
 			panic(err)
