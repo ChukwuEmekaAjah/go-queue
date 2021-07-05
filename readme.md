@@ -40,5 +40,4 @@ git clone https://github.com/ChukwuEmekaAjah/go-queue.git
 ```
 
 ## Todo
-- Create handler functions for Pull and Subscribe methods
 - Improve on documentation with examples and use cases
